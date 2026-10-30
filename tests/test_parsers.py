@@ -92,6 +92,11 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(r["rows"][0]["cols"]["total_deformation"][:2], ("0.00701", "mm"))
         self.assertEqual(r["rows"][0]["cols"]["equivalent_elastic_strain"][1], "1")  # no unit in the header -> dimensionless
 
+    def test_average_deformation_column_is_not_total_deformation(self):
+        text = "## Detailed Results\n\n| Thickness | Max Deformation (mm) | Avg Deformation (mm) |\n|---|---|---|\n| 0.85 mm | 0.00701 | 0.00214 |\n"
+        r = ingest.parse_readme(text)
+        self.assertEqual(r["rows"][0]["cols"]["total_deformation"][:2], ("0.00701", "mm"))  # the maximum, not the average
+
     def test_units(self):
         self.assertAlmostEqual(units.convert(2989600, "Pa", "MPa"), 2.9896)
         self.assertAlmostEqual(units.convert(1.25e-9, "tonne mm^-3", "g/cm^3"), 1.25)

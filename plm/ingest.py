@@ -178,7 +178,7 @@ def parse_readme(text):
                 elif not set(row) <= set("|-: "):
                     cols = {}
                     for name, cell in zip(header[1:], cells[1:]):
-                        q = ("total_deformation" if "deformation" in name.lower() else
+                        q = ("total_deformation" if "deformation" in name.lower() and "avg" not in name.lower() else
                              "equivalent_stress" if "stress" in name.lower() else
                              "equivalent_elastic_strain" if "strain" in name.lower() else None)
                         unit = re.search(r"\(([^)]*)\)", name)

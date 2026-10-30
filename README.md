@@ -29,7 +29,7 @@ export PLM_SOURCE_ROOT=../composite-honeycomb-structural-optimization-FEA
 
 ```bash
 python -m plm all                    # init (rebuild) -> import -> demo -> validate -> report
-python -m unittest discover -v       # 79 tests; six currently fail, see Known issues
+python -m unittest discover -v       # 80 tests, all pass on the committed data
 ```
 
 Or step by step. `--db FILE` and `--root DIR` are accepted by every command; `--root` defaults to `$PLM_SOURCE_ROOT`.
@@ -99,7 +99,7 @@ for the derived specific stiffness F/(deformation x mass). Indicative only: it a
 comparability, cross-source consistency, BOM/ECR integrity, source-file hashes). Each finding is an **error**, **warning** or
 **info**, with the affected record and a suggested correction. Source data is never modified.
 
-On the committed FEA data the current run gives **3 errors, 11 warnings, 14 info**. The errors are described under Known issues.
+On the committed FEA data the current run gives **0 errors, 11 warnings, 14 info**.
 
 | Finding (warning) | Detail |
 |---|---|
@@ -147,14 +147,13 @@ Every file is documented in its header and runs with `python -m plm query <file>
 
 ## Tests
 
-`python -m unittest discover -v` runs 79 tests covering the database, import, checks with injected errors, the workflow, the queries,
+`python -m unittest discover -v` runs 80 tests covering the database, import, checks with injected errors, the workflow, the queries,
 the reports and the CLI pipeline. The tests use the real FEA data, so `PLM_SOURCE_ROOT` must be set. Without it, the test package
 stops at import with a message saying so.
 
 ## Known issues
 
 - **Report source.** The importer reads the report that `data/report_values.csv` cites, named by `REPORT_PDF` in `plm/checks.py` (currently `Report/MAJOR PROJECT REPORT (1).pdf`). The two Appendix A PDFs in `Report/` are kept and registered as source files, but are not transcribed.
-- **Six tests fail on the committed data.** They assert that the data validates cleanly, and validation currently reports three errors. Those three are `README_REPORT_ROUNDING` errors for total deformation at 0.85, 1.2 and 1.6 mm. The tool reads the README's *Avg Deformation* column as total deformation (the traceability output shows this). The README's *Max Deformation* column matches the report at the README's precision, so the fix is to read that column. Not yet fixed.
 - Only **one solver** (ANSYS MAPDL 2025 R1) and one run per configuration exist, so cross-solver comparison returns no rows. The query
   is tested with clearly labelled synthetic data only.
 - Raw nodal results (`file.rst`, `SYS.mechdb`) are not parsed. Stress, strain and deformation are the documented values, cross-checked
