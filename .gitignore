@@ -1,0 +1,4 @@
+# generated database and bytecode
+build/
+__pycache__/
+*.pyc
