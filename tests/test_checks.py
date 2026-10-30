@@ -142,7 +142,7 @@ class InjectedErrorTests(unittest.TestCase):
 
     def test_solver_monitor_contradicts_documented_deformation(self):
         issues = self.run_checks("UPDATE result_metric SET value = 0.001 WHERE case_id = 1 AND metric_name = 'total_deformation'"
-                                 " AND source_file_id = (SELECT source_file_id FROM source_file WHERE file_kind = 'report_pdf')")
+                                 " AND source_file_id = (SELECT source_file_id FROM source_file WHERE rel_path = '" + checks.REPORT_PDF + "')")
         self.assertDetected(issues, "SOLVER_VS_DOCUMENTED_DEFORMATION", "error")
 
     def test_mislabelled_configuration_is_caught_by_mass_check(self):

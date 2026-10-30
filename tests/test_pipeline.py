@@ -185,6 +185,14 @@ class RejectedInputTests(unittest.TestCase):
             return rows
         self.assertIn("REPORT_ROW_WITHOUT_CONFIG", self.import_codes(self.make_root(mutate_config)))
 
+    def test_missing_cited_report_is_rejected(self):
+        root = self.make_root(lambda rows: rows)
+        (root / "Report").unlink()                              # keep only the Appendix A PDF, not the cited report
+        (root / "Report").mkdir()
+        (root / "Report" / "Appendix_A_Engineering_Data_Management.pdf").symlink_to(
+            ROOT / "Report" / "Appendix_A_Engineering_Data_Management.pdf")
+        self.assertIn("REPORT_PDF", self.import_codes(root))
+
 
 if __name__ == "__main__":
     unittest.main()

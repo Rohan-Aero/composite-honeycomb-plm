@@ -25,6 +25,8 @@ from typing import NamedTuple, Optional
 
 from . import units
 
+REPORT_PDF = "Report/MAJOR PROJECT REPORT (1).pdf"  # the report whose page numbers data/report_values.csv cites
+
 
 class Issue(NamedTuple):
     check_code: str
@@ -571,9 +573,9 @@ def check_report_transcription(conn, root):
     if root is None:
         return []
     root = Path(root)
-    pdfs = list((root / "Report").glob("*.pdf")) if (root / "Report").is_dir() else []
+    pdf = root / REPORT_PDF
     csv_path = root / "data" / "report_values.csv"
-    if not pdfs or not csv_path.is_file():
+    if not pdf.is_file() or not csv_path.is_file():
         return []
     if not shutil.which("pdftotext"):
         return [Issue("REPORT_TRANSCRIPTION", "info", "data/report_values.csv", "PDF cross-check skipped",
@@ -584,7 +586,7 @@ def check_report_transcription(conn, root):
         for row in csv.DictReader(fh):
             page = int(row["pdf_page"])
             if page not in pages:
-                text = subprocess.run(["pdftotext", "-f", str(page), "-l", str(page), "-layout", str(pdfs[0]), "-"],
+                text = subprocess.run(["pdftotext", "-f", str(page), "-l", str(page), "-layout", str(pdf), "-"],
                                       capture_output=True, text=True).stdout
                 pages[page] = re.sub(r"\s+", " ", text)
             needle = re.sub(r"\s+", " ", row["printed_value"].strip())

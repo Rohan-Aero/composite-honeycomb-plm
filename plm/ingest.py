@@ -14,7 +14,7 @@ import zipfile
 from pathlib import Path
 
 from . import checks, units
-from .checks import Issue
+from .checks import REPORT_PDF, Issue
 
 SIM_DIR, IMG_DIR, README, REPORT_DIR = "Simulation Files (ANSYS)", "Simulation Images", "README.md", "Report"
 REPORT_CSV = "data/report_values.csv"
@@ -291,11 +291,10 @@ def _load(conn, root, readme, csv_rows, qdef, folders):
                         blob = zf.read(info)
                         register(rel, info.filename, blob)
                         members.setdefault(rel, {})[_role(rel, info.filename)] = (info.filename, blob)
-    pdfs = [k for k in sf if k[0].startswith(REPORT_DIR + "/") and k[0].endswith(".pdf")]
-    if len(pdfs) != 1:
-        raise _reject("REPORT_PDF", f"expected exactly one report PDF under {REPORT_DIR}/, found {len(pdfs)}",
-                      "Keep a single report PDF there; its page numbers are cited by data/report_values.csv.")
-    pdf_id, pdf_rel = sf[pdfs[0]], pdfs[0][0]
+    if (REPORT_PDF, "") not in sf:
+        raise _reject("REPORT_PDF", f"the report cited by {REPORT_CSV} is missing: {REPORT_PDF}",
+                      f"Keep {REPORT_PDF} under {REPORT_DIR}/, or update REPORT_PDF in plm/checks.py.")
+    pdf_id, pdf_rel = sf[(REPORT_PDF, "")], REPORT_PDF  # other PDFs under Report/ are registered but not transcribed
     material = {}
 
     def material_id(name):
